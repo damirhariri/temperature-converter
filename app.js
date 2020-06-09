@@ -1,139 +1,29 @@
-const form = document.getElementById("form");
-const input = document.getElementById("input");
-const submit = document.getElementById("submit");
-const list = document.querySelector(".list");
-const clrBtn = document.getElementById("clear-task");
-const filter = document.getElementById("filter");
+const fahrenheit = document.getElementById("fahrenheit");
+const celsius = document.getElementById("celsius");
 
-loadEvents();
+loadListeners();
 
-function loadEvents() {
-  document.addEventListener("DOMContentLoaded", lsTasks);
+function fahr2cel() {
+  const fahrVal = parseFloat(fahrenheit.value);
 
-  form.addEventListener("submit", insertLI);
+  const celVal = (fahrVal - 32) * (5 / 9);
 
-  list.addEventListener("click", removeLi);
-
-  clrBtn.addEventListener("click", clearTasks);
-
-  filter.addEventListener("keyup", filterTask);
+  celsius.value = round(celVal);
 }
 
-function insertLI(e) {
-  const task = input.value;
+function cel2fahr() {
+  const celVal = parseFloat(celsius.value);
 
-  if (task === "") {
-    alert("Please input task");
-  } else {
-    const li = document.createElement("li");
-    li.className = "list-item";
-    li.appendChild(document.createTextNode(task));
-    const link = document.createElement("a");
-    link.className = "delete";
-    link.innerHTML = '<i class="fa fa-remove"></i>';
-    li.appendChild(link);
+  const fahrVal = celVal * (9 / 5) + 32;
 
-    list.appendChild(li);
-
-    setLS();
-
-    input.value = "";
-  }
-
-  e.preventDefault();
+  fahrenheit.value = round(fahrVal);
 }
 
-function setLS() {
-  const task = input.value;
-
-  let tasks;
-
-  if (localStorage.getItem("tasks") === null) {
-    tasks = [];
-  } else {
-    tasks = JSON.parse(localStorage.getItem("tasks"));
-  }
-
-  tasks.push(task);
-
-  localStorage.setItem("tasks", JSON.stringify(tasks));
-
-  console.log("task saved");
+function round(x) {
+  return Math.round(x * 100) / 100;
 }
 
-function removeLi(e) {
-  if (e.target.parentElement.classList.contains("delete")) {
-    if (confirm("are you sure?")) {
-      e.target.parentElement.parentElement.remove();
-
-      deleteLS(e.target.parentElement.parentElement);
-    }
-  }
-}
-
-function lsTasks() {
-  let tasks;
-
-  if (localStorage.getItem("tasks") === null) {
-    tasks = [];
-  } else {
-    tasks = JSON.parse(localStorage.getItem("tasks"));
-  }
-
-  tasks.forEach((task) => {
-    const li = document.createElement("li");
-    li.className = "list-item";
-    li.appendChild(document.createTextNode(task));
-    const link = document.createElement("a");
-    link.className = "delete";
-    link.innerHTML = '<i class="fa fa-remove"></i>';
-    li.appendChild(link);
-
-    list.appendChild(li);
-  });
-}
-
-function clearTasks(e) {
-  const tasks = Array(list);
-
-  tasks.forEach((task) => {
-    task.remove();
-  });
-
-  clearLS();
-}
-
-function clearLS() {
-  localStorage.clear();
-}
-
-function deleteLS(taskItem) {
-  let tasks;
-
-  if (localStorage.getItem("tasks") === null) {
-    tasks = [];
-  } else {
-    tasks = JSON.parse(localStorage.getItem("tasks"));
-  }
-
-  tasks.forEach((task) => {
-    if (taskItem.textContent === task) {
-      tasks.splice(task, 1);
-    }
-  });
-
-  localStorage.setItem("tasks", JSON.stringify(tasks));
-}
-
-function filterTask(e) {
-  const text = e.target.value.toLowerCase();
-  // console.log(text);
-  document.querySelectorAll(".list-item").forEach((task) => {
-    const itemText = task.textContent;
-    if (itemText.toLowerCase().indexOf(text) !== -1) {
-      task.style.display = "block";
-    } else {
-      task.style.display = "none";
-    }
-  });
+function loadListeners() {
+  fahrenheit.addEventListener("input", fahr2cel);
+  celsius.addEventListener("input", cel2fahr);
 }
